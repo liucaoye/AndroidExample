@@ -6,6 +6,11 @@
     android:orientation="vertical"
     tools:context=".aidl.activity.AIDLActivity">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#F98762"
+        android:text="另一个app"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -27,4 +32,17 @@
         android:layout_margin="10dp"
         android:text="获取数据"
         android:id="@+id/contactBtn" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="这是另一个应用的数据"
+        android:id="@+id/etText"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="同步数据到绑定的服务中"
+        android:id="@+id/syncBtn"/>
+
 </LinearLayout>
