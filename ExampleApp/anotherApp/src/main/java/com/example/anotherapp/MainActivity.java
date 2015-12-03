@@ -4,7 +4,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -14,9 +13,6 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.app.aidl.IMyAidlInterface;
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
 
 
 /**
@@ -25,7 +21,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
  * @time 16:38
  * <p/>
  * 方法一：serviceIntent.setComponent(new ComponentName("com.example.app", "com.example.app.aidl.service.AidlService"));
- * 方法二：AIDL
+ * 方法二：AIDL 和远程service通信
  */
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
