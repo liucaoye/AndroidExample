@@ -13,4 +13,5 @@
     <string name="call_telephone">打电话</string>
     <string name="send_message">发短信</string>
     <string name="please_select">请选择</string>
+    <string name="title_activity_lock_sreen">LockSreenActivity</string>
 </resources>

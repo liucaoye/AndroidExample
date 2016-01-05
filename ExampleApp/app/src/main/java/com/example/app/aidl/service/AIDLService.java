@@ -19,7 +19,7 @@ import com.example.app.utils.LogUtils;
  * 调用远程service
  *
  */
-public class AidlService extends Service {
+public class AIDLService extends Service {
 
     private String data = "默认";
 

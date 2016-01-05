@@ -4,9 +4,8 @@
 
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
-    <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
-
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
 
     <application
         android:allowBackup="true"
@@ -14,19 +13,12 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-
         <activity
             android:name=".aidl.activity.AIDLActivity"
+            android:label="@string/app_name"></activity>
+        <activity
+            android:name=".contacts.activity.ContactsActivity"
             android:label="@string/app_name">
-        </activity>
-
-        <activity android:name=".contacts.activity.ContactsActivity"
-            android:label="@string/app_name">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <service android:name=".aidl.service.LocalService">
@@ -36,8 +28,28 @@
         </service>
         <service
             android:name=".aidl.service.AidlService"
-            android:exported="true">
-        </service>
+            android:exported="true"></service>
+
+        <activity
+            android:name=".lockscreen.activity.LockSreenActivity"
+            android:label="@string/title_activity_lock_sreen"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <receiver android:name=".lockscreen.receiver.DeviceManagerBc">
+            <!-- TODO: meta-data什么意思？ -->
+            <meta-data android:name="android.app.device_admin" android:resource="@xml/device_admin"/>
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED"/>
+                <action android:name="android.app.action.DEVICE_ADMIN_DISABLED"/>
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>
