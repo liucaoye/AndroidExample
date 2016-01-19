@@ -26,9 +26,6 @@
                 <action android:name="aidl.service.local" />
             </intent-filter>
         </service>
-        <service
-            android:name=".aidl.service.AidlService"
-            android:exported="true"></service>
 
         <activity
             android:name=".lockscreen.activity.LockSreenActivity"
@@ -55,6 +52,9 @@
             </intent-filter>
         </receiver>
 
+        <activity android:name=".socket.ClientActivity"
+                  android:theme="@style/AppTheme">
+        </activity>
     </application>
 
 </manifest>
