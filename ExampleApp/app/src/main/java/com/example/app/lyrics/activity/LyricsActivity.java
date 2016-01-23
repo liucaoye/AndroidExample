@@ -1,14 +1,14 @@
 package com.example.app.lyrics.activity;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
-
 import com.example.app.R;
 
+
+/**
+ * 流程：
+ *      读取lrc文件，存储到内存数据中 ——> 循环draw歌词
+ * */
 public class LyricsActivity extends AppCompatActivity {
 
     @Override

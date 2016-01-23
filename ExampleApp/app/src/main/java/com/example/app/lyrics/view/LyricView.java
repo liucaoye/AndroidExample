@@ -2,6 +2,7 @@ package com.example.app.lyrics.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import com.example.app.lyrics.model.LyricObject;
@@ -49,6 +50,7 @@ public class LyricView extends View {
     private void init() {
         mLyricObjectMap = new TreeMap<>();
         getLyric();
+        Log.e("TAG", mLyricObjectMap.toString());
     }
 
     private void getLyric() {
