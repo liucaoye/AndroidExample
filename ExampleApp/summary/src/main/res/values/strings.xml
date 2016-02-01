@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">My Application</string>
+
+    <!-- 数据库创建表 -->
+    <string name="DB_TABLE_CREATE">CREATE TABLE if not exists Announcement
+		(
+			_Id				        BIGINT PRIMARY KEY,
+			Announcement_Id		    VARCHAR(30)
+         );
+
+	</string>
+
+    <string name="spend_time_format">普通的逐条存储话费的时间是：%1$s\n
+        使用ContentValues存储花费的时间是：%2$s\n
+        使用ContentValues和Transaction存储花费的时间是：%3$s\n
+        使用SQLiteStatement存储花费的时间是：%4$s\n
+        使用SQLiteStatement和Transaction存储花费的时间是：%5$s\n
+    </string>
+</resources>
