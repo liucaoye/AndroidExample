@@ -75,6 +75,10 @@
 
         <activity android:name=".location.activity.LocationActivity"
                   android:theme="@style/AppTheme">
+        </activity>
+
+
+        <activity android:name=".GlideActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
