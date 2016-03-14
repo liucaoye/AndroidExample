@@ -1,31 +1,34 @@
-package com.example.app;
+package com.example.app.glide;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.bumptech.glide.request.target.ImageViewTarget;
 import com.bumptech.glide.request.target.Target;
+import com.example.app.R;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class GlideActivity extends AppCompatActivity {
+public class GlideActivity extends AppCompatActivity implements View.OnClickListener{
 
     private ImageView firstImg;
     private ImageView secondImg;
     private ImageView thirdImg;
     private ImageView fourImg;
+
+    private ImageView imageView;
+    private RequestManager glideRequest;
 
     private String url;
 
@@ -38,6 +41,15 @@ public class GlideActivity extends AppCompatActivity {
         secondImg = (ImageView) findViewById(R.id.img_second);
         thirdImg = (ImageView) findViewById(R.id.img_third);
         fourImg = (ImageView) findViewById(R.id.img_four);
+
+        findViewById(R.id.button).setOnClickListener(this);
+        findViewById(R.id.button2).setOnClickListener(this);
+        findViewById(R.id.button3).setOnClickListener(this);
+        findViewById(R.id.button4).setOnClickListener(this);
+        imageView = (ImageView) findViewById(R.id.imageView);
+
+        glideRequest = Glide.with(this);
+
 
         url = "https://www.baidu.com/img/bdlogo.png";
         Glide.with(this).load(url).asBitmap().into(new BitmapImageViewTarget(firstImg));
@@ -113,5 +125,23 @@ public class GlideActivity extends AppCompatActivity {
 
         return bitmap;
 
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.button:
+                glideRequest.load("https://www.baidu.com/img/bdlogo.png").into(imageView);
+                break;
+            case R.id.button2:
+                glideRequest.load("https://www.baidu.com/img/bdlogo.png").transform(new GlideRoundTransform(this)).into(imageView);
+                break;
+            case R.id.button3:
+                glideRequest.load("https://www.baidu.com/img/bdlogo.png").transform(new GlideRoundTransform(this, 10)).into(imageView);
+                break;
+            case R.id.button4:
+                glideRequest.load("https://www.baidu.com/img/bdlogo.png").transform(new GlideCircleTransform(this)).into(imageView);
+                break;
+        }
     }
 }

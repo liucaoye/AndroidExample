@@ -78,7 +78,7 @@
         </activity>
 
 
-        <activity android:name=".GlideActivity">
+        <activity android:name=".glide.GlideActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
