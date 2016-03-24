@@ -20,9 +20,11 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <!-- 访问网络，网络定位需要上网 -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"
+        android:description="@string/app_description"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
@@ -44,7 +46,6 @@
         <activity
             android:name=".lockscreen.activity.LockSreenActivity"
             android:theme="@style/AppTheme.NoActionBar">
-
         </activity>
 
         <!-- 同步歌词 -->
@@ -73,17 +74,13 @@
 
         <!-- 百度地图 -->
 
-        <activity android:name=".location.activity.LocationActivity"
-                  android:theme="@style/AppTheme">
+        <activity
+            android:name=".location.activity.LocationActivity"
+            android:theme="@style/AppTheme">
         </activity>
 
-
+        <!-- Glide -->
         <activity android:name=".glide.GlideActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
 
         <!--
@@ -96,11 +93,35 @@
             android:enabled="true"
             android:process=":remote"/>
 
+        <!-- 百度地图 -->
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="fhOeQbKKxvVCGgRVRNvSeAVF"/>
 
-    </application>
+        <!-- 友盟 -->
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="56e938e667e58e57cf001423"/>
 
+        <!--  -->
+        <service
+            android:name="com.umeng.update.net.DownloadingService"
+            android:process=":DownloadingService"/>
+
+        <activity android:name=".update.CheckUpdateActivity">
+        </activity>
+        <activity
+            android:name=".update.UpdateActivity"
+            android:theme="@android:style/Theme.Dialog">
+        </activity>
+        <activity android:name=".update.UpgradeActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <service android:name=".update.UpdateService"></service>
+    </application>
 
 </manifest>
