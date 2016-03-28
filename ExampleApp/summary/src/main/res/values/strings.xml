@@ -17,4 +17,5 @@
         使用SQLiteStatement和Transaction存储花费的时间是：%5$s\n
     </string>
     <string name="app_description">总结懂得的知识点的细节问题，以及需要注意的点。</string>
+    <string name="title_activity_edit_view">EditViewActivity</string>
 </resources>

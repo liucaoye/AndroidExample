@@ -5,11 +5,11 @@
     <application
         android:name=".SummaryApplication"
         android:allowBackup="true"
+        android:description="@string/app_description"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-        android:description="@string/app_description">
+        android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         <activity android:name=".activity.DisplayInCompleteActivity">
         </activity>
         <activity android:name=".activity.AnnouncementListActivity">
@@ -17,13 +17,18 @@
         <activity android:name=".textview.TextViewActivity">
         </activity>
         <activity android:name=".progress.CircleProgressActivity">
+        </activity>
+        <activity android:name=".textview.EditTextActivity">
+
+        </activity>
+        <activity
+            android:name=".EditViewActivity"
+            android:label="@string/title_activity_edit_view">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-        </activity>
-        <activity android:name=".textview.EditTextActivity">
         </activity>
     </application>
 
