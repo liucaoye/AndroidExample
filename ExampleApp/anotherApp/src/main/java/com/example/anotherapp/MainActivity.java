@@ -24,7 +24,7 @@ import com.example.app.aidl.IMyAidlInterface;
  * 方法二：AIDL 和远程service通信
  */
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, ServiceConnection {
 
     private Button mBindBtn;
     private Button mUnbindBtn;
@@ -110,4 +110,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mSyncBtn.setOnClickListener(this);
     }
 
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+
+    }
 }
