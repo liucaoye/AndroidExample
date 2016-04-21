@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,6 +20,8 @@ import java.util.List;
  */
 public class Downloader {
 
+    private static final int KConnectionTime = 1000 * 60;
+    public static final int KMsgWhatCode = 0x11;
     /**
      * 定义三种下载状态
      * */
@@ -30,7 +33,7 @@ public class Downloader {
      * 下载地址
      * */
     private String mUrlStr;
-    private String mLocalFile;
+    private String mLocalFilePath;
     private int mThreadCount;
     private Handler mHandler;
     private int mFileSize;
@@ -45,9 +48,9 @@ public class Downloader {
     private List<DownloadInfo> mInfoList;
 
 
-    public Downloader(Context context, String urlStr, String localFile, int threadCount, Handler handler) {
+    public Downloader(Context context, String urlStr, String localFilePath, int threadCount, Handler handler) {
         mUrlStr = urlStr;
-        mLocalFile = localFile;
+        mLocalFilePath = localFilePath;
         mThreadCount = threadCount;
         mHandler = handler;
         mStatus = KInitStatus;
@@ -61,18 +64,18 @@ public class Downloader {
      * 判断是否是第一次下载
      * */
     public boolean isFirst(String url) {
-        return mDao.isHasInfos(url);
+        return !mDao.isHasInfos(url);
     }
 
     private void init() {
         try {
             URL url = new URL(mUrlStr);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setConnectTimeout(5000);
+            connection.setConnectTimeout(KConnectionTime);
             connection.setRequestMethod("GET");
             mFileSize = connection.getContentLength();
 
-            File file = new File(mLocalFile);
+            File file = new File(mLocalFilePath);
             if (!file.exists()) {
                 file.createNewFile();
             }
@@ -87,9 +90,29 @@ public class Downloader {
 
     }
 
-//    public LoadInfo getDownloaderInfos() {
-//
-//    }
+    public LoadInfo getDownloaderInfos() {
+        if (isFirst(mUrlStr)) {
+            init();
+            int range = mFileSize / mThreadCount;
+            mInfoList = new ArrayList<>();
+            for (int i = 0; i <= mThreadCount - 1; i++) {
+                DownloadInfo info = new DownloadInfo(i, i * range, (i + 1) * range - 1, 0, mUrlStr);
+                mInfoList.add(info);
+            }
+            mDao.saveInfos(mInfoList);
+            return new LoadInfo(mFileSize, 0, mUrlStr);
+        } else {
+            mInfoList = mDao.getInfos(mUrlStr);
+            int size = 0;
+            int completeSize = 0;
+            for (DownloadInfo info : mInfoList) {
+                completeSize += info.getCompleteSize();
+                // TODO:为什么要+1?
+                size += info.getEndPos() - info.getStartPos() + 1;
+            }
+            return new LoadInfo(size, completeSize, mUrlStr);
+        }
+    }
 
     public void download() {
         if (mInfoList != null) {
@@ -136,13 +159,13 @@ public class Downloader {
             RandomAccessFile randomAccessFile = null;
             InputStream inputStream = null;
             try {
-                URL url = new URL(mUrlStr);
+                URL url = new URL(urlStr);
                 connection = (HttpURLConnection) url.openConnection();
-                connection.setConnectTimeout(5000);
+                connection.setConnectTimeout(KConnectionTime);
                 connection.setRequestMethod("GET");
                 connection.setRequestProperty("Range", "bytes=" + (startPos + completeSize) + "-" + endPos);
 
-                randomAccessFile = new RandomAccessFile(mLocalFile, "rwd");
+                randomAccessFile = new RandomAccessFile(mLocalFilePath, "rwd");
                 randomAccessFile.seek(startPos + completeSize);
                 inputStream = connection.getInputStream();
                 byte[] buffer = new byte[4096];
@@ -152,7 +175,7 @@ public class Downloader {
                     completeSize += length;
                     mDao.updateInfos(threadId, completeSize, urlStr);
                     Message message = Message.obtain();
-                    message.what = 1;
+                    message.what = KMsgWhatCode;
                     message.obj = urlStr;
                     message.arg1 = length;
                     mHandler.sendMessage(message);

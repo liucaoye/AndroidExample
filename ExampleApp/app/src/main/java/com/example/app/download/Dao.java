@@ -27,7 +27,7 @@ public class Dao {
         cursor.moveToFirst();
         int count = cursor.getInt(0);
         cursor.close();
-        return count == 0;
+        return count > 0;
     }
 
     public void saveInfos(List<DownloadInfo> infos) {
