@@ -21,7 +21,8 @@ import java.util.List;
 public class Downloader {
 
     private static final int KConnectionTime = 1000 * 60;
-    public static final int KMsgWhatCode = 0x11;
+    public static final int KMsgInitCode = 0x10;
+    public static final int KMsgDownloadingCode = 0x11;
     /**
      * 定义三种下载状态
      * */
@@ -54,6 +55,7 @@ public class Downloader {
         mThreadCount = threadCount;
         mHandler = handler;
         mStatus = KInitStatus;
+        mDao = new Dao(context);
     }
 
     public boolean isDownloading() {
@@ -67,12 +69,13 @@ public class Downloader {
         return !mDao.isHasInfos(url);
     }
 
-    private void init() {
+    private void initFile() {
+        RandomAccessFile accessFile = null;
+
         try {
             URL url = new URL(mUrlStr);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setConnectTimeout(KConnectionTime);
-            connection.setRequestMethod("GET");
             mFileSize = connection.getContentLength();
 
             File file = new File(mLocalFilePath);
@@ -80,72 +83,101 @@ public class Downloader {
                 file.createNewFile();
             }
             // 本地访问文件
-            RandomAccessFile accessFile = new RandomAccessFile(file, "rwd");
+            accessFile = new RandomAccessFile(file, "rwd");
             accessFile.setLength(mFileSize);
-            accessFile.close();
             connection.disconnect();
         } catch (java.io.IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (accessFile != null) {
+                    accessFile.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
     }
 
-    public LoadInfo getDownloaderInfos() {
-        if (isFirst(mUrlStr)) {
-            init();
-            int range = mFileSize / mThreadCount;
-            mInfoList = new ArrayList<>();
-            for (int i = 0; i <= mThreadCount - 1; i++) {
-                DownloadInfo info = new DownloadInfo(i, i * range, (i + 1) * range - 1, 0, mUrlStr);
-                mInfoList.add(info);
+    public void initDownloader() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                LoadInfo loadInfo = null;
+                if (isFirst(mUrlStr)) {
+                    initFile();
+                    int range = mFileSize / mThreadCount;
+                    mInfoList = new ArrayList<>();
+                    for (int i = 0; i <= mThreadCount - 1; i++) {
+                        DownloadInfo info = null;
+                        if (i == mThreadCount - 1) {
+                            // 考虑不能整除的情况
+                            info = new DownloadInfo(mThreadCount - 1, (mThreadCount - 1) * range, mFileSize - 1, 0, mUrlStr);
+                            mInfoList.add(info);
+                        } else {
+                            info = new DownloadInfo(i, i * range, (i + 1) * range - 1, 0, mUrlStr);
+                        }
+                        mInfoList.add(info);
+                    }
+
+                    mDao.insertInfos(mInfoList);
+                    loadInfo = new LoadInfo(mFileSize, 0, mUrlStr);
+                } else {
+                    mInfoList = mDao.getInfos(mUrlStr);
+                    int size = 0;
+                    int completeSize = 0;
+                    for (DownloadInfo info : mInfoList) {
+                        completeSize += info.getCompleteSize();
+                        size += info.getEndPos() - info.getStartPos() + 1;
+                    }
+                    loadInfo = new LoadInfo(size, completeSize, mUrlStr);
+                }
+
+                Message msg = Message.obtain();
+                msg.what = Downloader.KMsgInitCode;
+                msg.obj = loadInfo;
+                mHandler.sendMessage(msg);
             }
-            mDao.saveInfos(mInfoList);
-            return new LoadInfo(mFileSize, 0, mUrlStr);
-        } else {
-            mInfoList = mDao.getInfos(mUrlStr);
-            int size = 0;
-            int completeSize = 0;
-            for (DownloadInfo info : mInfoList) {
-                completeSize += info.getCompleteSize();
-                // TODO:为什么要+1?
-                size += info.getEndPos() - info.getStartPos() + 1;
-            }
-            return new LoadInfo(size, completeSize, mUrlStr);
-        }
+        }).start();
+
     }
 
-    public void download() {
+    public void start() {
         if (mInfoList != null) {
             if (mStatus == KDownloadingStatus) {
                 return;
             }
             mStatus = KDownloadingStatus;
             for (DownloadInfo info : mInfoList) {
-                new MyThread(info.getThreadId(), info.getStartPos(), info.getEndPos(), info.getCompleteSize(), info.getUrl()).start();
+                new DownloadThread(info.getThreadId(), info.getStartPos(), info.getEndPos(), info.getCompleteSize(), info.getUrl()).start();
             }
         }
-    }
-
-    public void delete(String urlStr) {
-        mDao.delete(urlStr);
     }
 
     public void  pause() {
         mStatus = KPauseStatus;
     }
 
-    public void  reset() {
+    public void complete() {
+        reset();
+        mDao.delete(mUrlStr);
+        mDao.closeDb();
+
+    }
+
+    private void  reset() {
         mStatus = KInitStatus;
     }
 
-    class MyThread extends Thread {
+    class DownloadThread extends Thread {
         private int threadId;
         private int startPos;
         private int endPos;
         private int completeSize;
         private String urlStr;
 
-        public MyThread(int threadId, int startPos, int endPos, int completeSize, String urlStr) {
+        public DownloadThread(int threadId, int startPos, int endPos, int completeSize, String urlStr) {
             this.threadId = threadId;
             this.startPos = startPos;
             this.endPos = endPos;
@@ -168,29 +200,35 @@ public class Downloader {
                 randomAccessFile = new RandomAccessFile(mLocalFilePath, "rwd");
                 randomAccessFile.seek(startPos + completeSize);
                 inputStream = connection.getInputStream();
+
                 byte[] buffer = new byte[4096];
-                int length = -1;
+                int length = 0;
                 while ((length = inputStream.read(buffer)) != -1) {
-                    randomAccessFile.write(buffer, completeSize, length);
+                    randomAccessFile.write(buffer, 0, length);
                     completeSize += length;
                     mDao.updateInfos(threadId, completeSize, urlStr);
                     Message message = Message.obtain();
-                    message.what = KMsgWhatCode;
-                    message.obj = urlStr;
+                    message.what = KMsgDownloadingCode;
                     message.arg1 = length;
                     mHandler.sendMessage(message);
                     if (mStatus == KPauseStatus) {
                         return;
                     }
                 }
+
             } catch (java.io.IOException e) {
                 e.printStackTrace();
             } finally {
                 try {
-                    inputStream.close();
-                    randomAccessFile.close();
-                    connection.disconnect();
-                    mDao.closeDb();
+                    if (inputStream != null) {
+                        inputStream.close();
+                    }
+                    if (randomAccessFile != null) {
+                        randomAccessFile.close();
+                    }
+                    if (connection != null) {
+                        connection.disconnect();
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

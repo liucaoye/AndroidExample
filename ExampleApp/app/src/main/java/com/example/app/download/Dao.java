@@ -18,7 +18,7 @@ public class Dao {
 
     public Dao(Context context) {
         mDBHelper = new DBHelper(context);
-        SQLiteDatabase database = mDBHelper.getWritableDatabase();
+        mDatabase = mDBHelper.getWritableDatabase();
     }
 
     public boolean isHasInfos(String url) {
@@ -30,7 +30,7 @@ public class Dao {
         return count > 0;
     }
 
-    public void saveInfos(List<DownloadInfo> infos) {
+    public void insertInfos(List<DownloadInfo> infos) {
         for (DownloadInfo info : infos) {
             String sql = "insert into " + DBHelper.KTableName + "(" + DBHelper.KFieldNameThreadId + ", "
                     + DBHelper.KFieldNameStartPos + ", " + DBHelper.KFieldNameEndPos + ", " + DBHelper.KFieldNameCompleteSize + ", "
@@ -65,7 +65,6 @@ public class Dao {
         String sql = "delete from " + DBHelper.KTableName + " where " + DBHelper.KFieldNameUrl + "=?";
         Object[] bindArgs = {url};
         mDatabase.execSQL(sql, bindArgs);
-        mDatabase.close();
     }
 
     public void closeDb() {
