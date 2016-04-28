@@ -10,7 +10,11 @@ public class LogUtils {
 
 
     public static void d(String msg) {
-        Log.d(getTag(), msg);
+        Log.println(Log.DEBUG, getTag(), msg);
+    }
+
+    public static void e(String msg) {
+        Log.println(Log.ERROR, getTag(), msg);
     }
 
     public static void printMethod() {
@@ -20,24 +24,11 @@ public class LogUtils {
         Log.d(tag, "-----" + method + "-----");
     }
 
-    private static String getClassTag() {
-        StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[3];
-        String tag = stackTraceElement.getClassName();
-        return tag;
-    }
-
     private static String getTag() {
-        StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[3];
-        String tag = stackTraceElement.getClassName() + "::"
-                + stackTraceElement.getMethodName() + "::"
-                + stackTraceElement.getLineNumber();
-        return tag;
-    }
-
-    private static String getMethodTag() {
-        StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[3];
-        String tag = stackTraceElement.getClassName() + "::"
-                + stackTraceElement.getMethodName();
+        StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[4];
+        String tag = stackTraceElement.getClassName() + "."
+                + stackTraceElement.getMethodName() + "(Line:"
+                + stackTraceElement.getLineNumber() + ")";
         return tag;
     }
 
