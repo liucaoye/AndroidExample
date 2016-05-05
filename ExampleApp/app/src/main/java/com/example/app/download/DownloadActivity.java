@@ -49,6 +49,17 @@ public class DownloadActivity extends Activity implements View.OnClickListener{
         mResetBtn.setOnClickListener(this);
 
         mAppNameTv.setText(FILE_NAME);
+        initDownload();
+    }
+
+    private void initDownload() {
+        String localFilePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + File.separator + FILE_NAME;
+        int threadCount = 2;
+        mDownloader = new Downloader(DownloadActivity.this, URL, localFilePath, threadCount, mHandler);
+        if (mDownloader.isDownloading()) {
+            return;
+        }
+        mDownloader.initDownloader();
     }
 
     private Handler mHandler = new Handler() {
@@ -59,7 +70,6 @@ public class DownloadActivity extends Activity implements View.OnClickListener{
                     LoadInfo loadInfo = (LoadInfo) msg.obj;
                     mProgressBar.setMax(loadInfo.getFileSize());
                     mProgressBar.setProgress(loadInfo.getCompleteSize());
-                    mDownloader.start();
                     break;
                 case Downloader.KMsgDownloadingCode:
                     int length = msg.arg1;
@@ -77,13 +87,7 @@ public class DownloadActivity extends Activity implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_download:
-                String localFilePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + File.separator + FILE_NAME;
-                int threadCount = 2;
-                mDownloader = new Downloader(DownloadActivity.this, URL, localFilePath, threadCount, mHandler);
-                if (mDownloader.isDownloading()) {
-                    return;
-                }
-                mDownloader.initDownloader();
+                mDownloader.start();
                 break;
             case R.id.btn_pause:
                 if (mDownloader == null || !mDownloader.isDownloading()) {

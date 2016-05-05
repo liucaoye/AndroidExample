@@ -17,6 +17,16 @@ import java.util.List;
  * @author LIUYAN
  * @date 2016/4/14 0014
  * @time 16:20
+ * 知识点：
+ *      1.  "r"      以只读方式打开。调用结果对象的任何 write 方法都将导致抛出 IOException。
+ *          "rw"     打开以便读取和写入。如果该文件尚不存在，则尝试创建该文件。
+ *          "rws"    打开以便读取和写入，对于 "rw"，还要求对文件的内容或元数据的每个更新都同步写入到底层存储设备。
+ *          "rwd"    打开以便读取和写入，对于 "rw"，还要求对文件内容的每个更新都同步写入到底层存储设备。和"rws"比较：减少执行的 I/O 操作数量
+ *              如果该文件位于本地存储设备上，那么当返回此类的一个方法的调用时，可以保证由该调用对此文件所做的所有更改均被写入该设备。
+ *          这对确保在系统崩溃时不会丢失重要信息特别有用。如果该文件不在本地设备上，则无法提供这样的保证。
+ *
+ *
+ *
  */
 public class Downloader {
 
@@ -29,6 +39,7 @@ public class Downloader {
     private static final int KInitStatus = 1;
     private static final int KDownloadingStatus = 2;
     private static final int KPauseStatus = 3;
+    private static final int KCompleteStatus = 4;
 
     /**
      * 下载地址
@@ -114,7 +125,6 @@ public class Downloader {
                         if (i == mThreadCount - 1) {
                             // 考虑不能整除的情况
                             info = new DownloadInfo(mThreadCount - 1, (mThreadCount - 1) * range, mFileSize - 1, 0, mUrlStr);
-                            mInfoList.add(info);
                         } else {
                             info = new DownloadInfo(i, i * range, (i + 1) * range - 1, 0, mUrlStr);
                         }
@@ -132,6 +142,9 @@ public class Downloader {
                         size += info.getEndPos() - info.getStartPos() + 1;
                     }
                     loadInfo = new LoadInfo(size, completeSize, mUrlStr);
+                    if (size == completeSize) {
+                        complete();
+                    }
                 }
 
                 Message msg = Message.obtain();
@@ -145,7 +158,7 @@ public class Downloader {
 
     public void start() {
         if (mInfoList != null) {
-            if (mStatus == KDownloadingStatus) {
+            if (mStatus == KDownloadingStatus || mStatus == KCompleteStatus) {
                 return;
             }
             mStatus = KDownloadingStatus;
@@ -160,14 +173,8 @@ public class Downloader {
     }
 
     public void complete() {
-        reset();
-        mDao.delete(mUrlStr);
+        mStatus = KCompleteStatus;
         mDao.closeDb();
-
-    }
-
-    private void  reset() {
-        mStatus = KInitStatus;
     }
 
     class DownloadThread extends Thread {
@@ -200,13 +207,15 @@ public class Downloader {
                 randomAccessFile = new RandomAccessFile(mLocalFilePath, "rwd");
                 randomAccessFile.seek(startPos + completeSize);
                 inputStream = connection.getInputStream();
-
                 byte[] buffer = new byte[4096];
                 int length = 0;
                 while ((length = inputStream.read(buffer)) != -1) {
                     randomAccessFile.write(buffer, 0, length);
                     completeSize += length;
+
                     mDao.updateInfos(threadId, completeSize, urlStr);
+                    mInfoList.get(threadId).setCompleteSize(completeSize);
+
                     Message message = Message.obtain();
                     message.what = KMsgDownloadingCode;
                     message.arg1 = length;

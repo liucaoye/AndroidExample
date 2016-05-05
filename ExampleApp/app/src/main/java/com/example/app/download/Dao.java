@@ -68,7 +68,6 @@ public class Dao {
     }
 
     public void closeDb() {
-        mDatabase.close();
         mDBHelper.close();
     }
 }
