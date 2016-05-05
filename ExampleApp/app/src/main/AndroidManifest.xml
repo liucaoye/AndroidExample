@@ -117,7 +117,6 @@
             android:theme="@android:style/Theme.Dialog">
         </activity>
         <activity android:name=".update.UpgradeActivity">
-
         </activity>
 
         <service android:name=".update.UpdateService"/>
@@ -125,8 +124,12 @@
         <activity android:name=".download.DownloadActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
+
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity android:name=".animation.AnimationActivity">
+
         </activity>
     </application>
 
