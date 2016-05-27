@@ -1,8 +1,8 @@
 package com.example.app.download;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Message;
+
+import com.example.app.utils.LogUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +39,11 @@ public class Downloader {
     private static final int KInitStatus = 1;
     private static final int KDownloadingStatus = 2;
     private static final int KPauseStatus = 3;
-    private static final int KCompleteStatus = 4;
+    private static final int KStopStatus = 4;
+    private static final int KCompleteStatus = 5;
+    // 1. 磁盘满
+    // 2. 插队
+    // 3. 下载失败
 
     /**
      * 下载地址
@@ -47,9 +51,11 @@ public class Downloader {
     private String mUrlStr;
     private String mLocalFilePath;
     private int mThreadCount;
-    private Handler mHandler;
     private int mFileSize;
     private int mStatus;
+    private boolean isSupportBreakPoint;
+
+    private DownloadEventListener mEventListener;
     /**
      * 工具类
      * */
@@ -60,17 +66,14 @@ public class Downloader {
     private List<DownloadInfo> mInfoList;
 
 
-    public Downloader(Context context, String urlStr, String localFilePath, int threadCount, Handler handler) {
+    public Downloader(Context context, String urlStr, String localFilePath, int threadCount, DownloadEventListener listener) {
         mUrlStr = urlStr;
         mLocalFilePath = localFilePath;
         mThreadCount = threadCount;
-        mHandler = handler;
+        mEventListener = listener;
         mStatus = KInitStatus;
         mDao = new Dao(context);
-    }
-
-    public boolean isDownloading() {
-        return mStatus == KDownloadingStatus;
+        initDownloader();
     }
 
     /**
@@ -87,7 +90,17 @@ public class Downloader {
             URL url = new URL(mUrlStr);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setConnectTimeout(KConnectionTime);
+            connection.setRequestProperty("Range", "bytes=0-");
             mFileSize = connection.getContentLength();
+
+            LogUtils.e("初始化时返回：" + connection.getResponseCode() + ", 文件大小: " + mFileSize);
+            // 如果支持断点下载，服务器返回206
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_PARTIAL) {
+                //
+                isSupportBreakPoint = true;
+            } else {
+                isSupportBreakPoint = false;
+            }
 
             File file = new File(mLocalFilePath);
             if (!file.exists()) {
@@ -111,15 +124,20 @@ public class Downloader {
 
     }
 
-    public void initDownloader() {
+    private void initDownloader() {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 LoadInfo loadInfo = null;
                 if (isFirst(mUrlStr)) {
                     initFile();
-                    int range = mFileSize / mThreadCount;
                     mInfoList = new ArrayList<>();
+
+                    if (!isSupportBreakPoint) {
+                        mThreadCount = 1;
+                    }
+
+                    int range = mFileSize / mThreadCount;
                     for (int i = 0; i <= mThreadCount - 1; i++) {
                         DownloadInfo info = null;
                         if (i == mThreadCount - 1) {
@@ -143,25 +161,36 @@ public class Downloader {
                     }
                     loadInfo = new LoadInfo(size, completeSize, mUrlStr);
                     if (size == completeSize) {
-                        complete();
+                        mEventListener.downloadComplete();
                     }
                 }
 
-                Message msg = Message.obtain();
-                msg.what = Downloader.KMsgInitCode;
-                msg.obj = loadInfo;
-                mHandler.sendMessage(msg);
+                mEventListener.downloadInit(loadInfo.getFileSize(), loadInfo.getCompleteSize());
             }
         }).start();
 
     }
 
+    public String getLocalFilePath() {
+        return mLocalFilePath;
+    }
+
+    public int getFileSize() {
+        return mFileSize;
+    }
+
+    public int getStatus() {
+        return mStatus;
+    }
+
     public void start() {
         if (mInfoList != null) {
             if (mStatus == KDownloadingStatus || mStatus == KCompleteStatus) {
+                // 完成接口
                 return;
             }
             mStatus = KDownloadingStatus;
+
             for (DownloadInfo info : mInfoList) {
                 new DownloadThread(info.getThreadId(), info.getStartPos(), info.getEndPos(), info.getCompleteSize(), info.getUrl()).start();
             }
@@ -169,7 +198,18 @@ public class Downloader {
     }
 
     public void  pause() {
-        mStatus = KPauseStatus;
+        if (mStatus == KDownloadingStatus) {
+            mStatus = KPauseStatus;
+        }
+    }
+
+    public void stop() {
+        if (mStatus == KDownloadingStatus || mStatus == KPauseStatus) {
+            mStatus = KStopStatus;
+            mInfoList.clear();
+            mDao.delete(mUrlStr);
+            mEventListener.downloadCancel();
+        }
     }
 
     public void complete() {
@@ -204,6 +244,7 @@ public class Downloader {
                 connection.setRequestMethod("GET");
                 connection.setRequestProperty("Range", "bytes=" + (startPos + completeSize) + "-" + endPos);
 
+                LogUtils.e("初始化时返回：" + connection.getResponseCode());
                 randomAccessFile = new RandomAccessFile(mLocalFilePath, "rwd");
                 randomAccessFile.seek(startPos + completeSize);
                 inputStream = connection.getInputStream();
@@ -216,17 +257,15 @@ public class Downloader {
                     mDao.updateInfos(threadId, completeSize, urlStr);
                     mInfoList.get(threadId).setCompleteSize(completeSize);
 
-                    Message message = Message.obtain();
-                    message.what = KMsgDownloadingCode;
-                    message.arg1 = length;
-                    mHandler.sendMessage(message);
-                    if (mStatus == KPauseStatus) {
-                        return;
+                    mEventListener.downloadProgress(length);
+                    if (mStatus == KPauseStatus || mStatus == KStopStatus) {
+                        break;
                     }
                 }
 
             } catch (java.io.IOException e) {
                 e.printStackTrace();
+                mEventListener.downloadFailed();
             } finally {
                 try {
                     if (inputStream != null) {
@@ -243,7 +282,14 @@ public class Downloader {
                 }
             }
         }
+
     }
 
-
+    interface DownloadEventListener {
+        void downloadProgress(int progress);
+        void downloadInit(int fileSize, int completeSize);
+        void downloadFailed();
+        void downloadCancel();
+        void downloadComplete();
+    }
 }

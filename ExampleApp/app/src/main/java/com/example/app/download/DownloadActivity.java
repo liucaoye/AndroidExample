@@ -19,7 +19,7 @@ import com.example.app.R;
 
 import java.io.File;
 
-public class DownloadActivity extends Activity implements View.OnClickListener{
+public class DownloadActivity extends Activity implements View.OnClickListener, Downloader.DownloadEventListener{
 
     private static final String URL = "http://images.mifengtd.cn/2011/07/GTD.jpg";
 
@@ -55,33 +55,8 @@ public class DownloadActivity extends Activity implements View.OnClickListener{
     private void initDownload() {
         String localFilePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + File.separator + FILE_NAME;
         int threadCount = 2;
-        mDownloader = new Downloader(DownloadActivity.this, URL, localFilePath, threadCount, mHandler);
-        if (mDownloader.isDownloading()) {
-            return;
-        }
-        mDownloader.initDownloader();
+        mDownloader = new Downloader(DownloadActivity.this, URL, localFilePath, threadCount, this);
     }
-
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case Downloader.KMsgInitCode:
-                    LoadInfo loadInfo = (LoadInfo) msg.obj;
-                    mProgressBar.setMax(loadInfo.getFileSize());
-                    mProgressBar.setProgress(loadInfo.getCompleteSize());
-                    break;
-                case Downloader.KMsgDownloadingCode:
-                    int length = msg.arg1;
-                    mProgressBar.incrementProgressBy(length);
-                    if (mProgressBar.getProgress() == mProgressBar.getMax()) {
-                        Toast.makeText(DownloadActivity.this, "下载完成！", Toast.LENGTH_SHORT).show();
-                        mDownloader.complete();
-                    }
-                    break;
-            }
-        }
-    };
 
     @Override
     public void onClick(View v) {
@@ -90,13 +65,45 @@ public class DownloadActivity extends Activity implements View.OnClickListener{
                 mDownloader.start();
                 break;
             case R.id.btn_pause:
-                if (mDownloader == null || !mDownloader.isDownloading()) {
+                if (mDownloader == null) {
                     return;
                 }
                 mDownloader.pause();
                 break;
             case R.id.btn_reset:
+                mDownloader.stop();
                 break;
         }
     }
+
+    @Override
+    public void downloadProgress(int progress) {
+        mProgressBar.incrementProgressBy(progress);
+    }
+
+    @Override
+    public void downloadInit(int fileSize, int completeSize) {
+        mProgressBar.setMax(fileSize);
+        mProgressBar.setProgress(completeSize);
+    }
+
+    @Override
+    public void downloadFailed() {
+
+    }
+
+    @Override
+    public void downloadCancel() {
+        mProgressBar.setProgress(0);
+    }
+
+    @Override
+    public void downloadComplete() {
+        if (mProgressBar.getProgress() == mProgressBar.getMax()) {
+            Toast.makeText(DownloadActivity.this, "下载完成！", Toast.LENGTH_SHORT).show();
+            mDownloader.complete();
+        }
+    }
+
+
 }
