@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.myapplication">
+          package="com.example.myapplication">
 
     <application
         android:name=".SummaryApplication"
@@ -8,26 +8,34 @@
         android:description="@string/app_description"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:supportsRtl="true"
-        android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
-        <activity android:name=".activity.DisplayInCompleteActivity"></activity>
-        <activity android:name=".activity.AnnouncementListActivity"></activity>
-        <activity android:name=".textview.EditTextActivity"></activity>
-        <activity android:name=".progress.CircleProgressActivity"></activity>
+        android:theme="@android:style/Theme.Light">
+        <activity android:name=".activity.DisplayInCompleteActivity"/>
+        <activity android:name=".activity.AnnouncementListActivity"/>
+        <activity android:name=".textview.EditTextActivity"/>
+        <activity android:name=".progress.CircleProgressActivity"/>
         <activity
             android:name=".EditViewActivity"
             android:label="@string/title_activity_edit_view">
-
         </activity>
         <activity android:name=".scrollview.ScrollViewActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".popupwindow.PopupWindowActivity">
+        </activity>
+        <activity android:name=".H5ToNativeActivity"
+                  android:label="@string/app_name">
+            <!--android:launchMode="singleTask"-->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
 
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data  android:scheme="app" android:host="local" />
+            </intent-filter>
         </activity>
     </application>
 
