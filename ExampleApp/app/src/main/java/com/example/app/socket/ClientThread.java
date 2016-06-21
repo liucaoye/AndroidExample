@@ -27,26 +27,22 @@ public class ClientThread extends Thread {
     public ClientThread(Socket s, Handler handler) {
         socket = s;
         mHandler = handler;
-        try {
-            bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
     public void run() {
         try {
 
+            bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
             while (true) {
                 String content = null;
 
                 while((content = bufferedReader.readLine()) != null) {
-
+                    System.out.println("client thread receiver content: " + content);
                     Message msg = new Message();
                     msg.obj = content;
                     mHandler.sendMessage(msg);
-
                 }
             }
 
