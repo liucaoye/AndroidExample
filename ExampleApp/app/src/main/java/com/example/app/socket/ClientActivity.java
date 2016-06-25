@@ -3,25 +3,25 @@ package com.example.app.socket;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.app.R;
+import com.example.app.utils.LogUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
 public class ClientActivity extends Activity implements View.OnClickListener{
+
+    private static final String ADDRESS_IP = "192.168.31.212";
+    private static final int ADDRESS_PORT = 12345;
 
     private EditText mEtMessage;
     private TextView mContentTv;
@@ -30,18 +30,6 @@ public class ClientActivity extends Activity implements View.OnClickListener{
     private Socket mSocket;
     private BufferedWriter mWriter;
     private BufferedReader mReader;
-
-    private OutputStream outputStream;
-
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            String content = (String) msg.obj;
-            mContentTv.append(content);
-        }
-    };
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,63 +44,21 @@ public class ClientActivity extends Activity implements View.OnClickListener{
         mConnectBtn.setOnClickListener(this);
     }
 
-    // --------------------------------------
-
-    private void initSocket() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (mSocket == null) {
-                        mSocket = new Socket("192.168.202.173", 12345);
-                        outputStream = mSocket.getOutputStream();
-                    }
-
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(mSocket.getInputStream()));
-
-                    String content = null;
-                    while((content = bufferedReader.readLine()) != null) {
-                        System.out.println("client thread receiver content: " + content);
-                        Message msg = new Message();
-                        msg.obj = content;
-                        mHandler.sendMessage(msg);
-                    }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-
-    }
-
-    public void sendData() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    outputStream.write((mEtMessage.getText().toString() + "\n").getBytes("UTF-8"));
-                    outputStream.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-
-    }
-
     private void connect() {
         try {
-            mSocket = new Socket("", 12345);
+            // TODO: 替换成本地IP
+            mSocket = new Socket(ADDRESS_IP, ADDRESS_PORT);
             mWriter = new BufferedWriter(new OutputStreamWriter(mSocket.getOutputStream()));
             mReader = new BufferedReader(new InputStreamReader(mSocket.getInputStream()));
-            Toast.makeText(this, "建立链接！", Toast.LENGTH_SHORT).show();
+            LogUtils.e("建立链接!");
             AsyncTask<Void, String, Void> read = new AsyncTask<Void, String, Void>() {
                 @Override
                 protected Void doInBackground(Void... params) {
-                    String line;
+                    String line = null;
                     try {
+                        LogUtils.e("读取数据 start...... ");
                         while ((line = mReader.readLine()) != null) {
+                            LogUtils.e("读取数据 line: " + line);
                             publishProgress(line);
                         }
                     } catch (IOException e) {
@@ -129,13 +75,15 @@ public class ClientActivity extends Activity implements View.OnClickListener{
             read.execute();
         } catch (IOException e) {
             e.printStackTrace();
-            Toast.makeText(this, "无法建立链接", Toast.LENGTH_SHORT).show();
+            LogUtils.e("无法建立链接!");
         }
     }
 
     private void send() {
         try {
-            mWriter.write(mEtMessage.getText().toString());
+            // TODO: 必须加换行符"\n"
+            mWriter.write(mEtMessage.getText().toString()+ "\n");
+            mWriter.flush();
             mEtMessage.setText(null);
         } catch (IOException e) {
             e.printStackTrace();
@@ -149,7 +97,12 @@ public class ClientActivity extends Activity implements View.OnClickListener{
                 send();
                 break;
             case R.id.btn_connect:
-                connect();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        connect();
+                    }
+                }).start();
                 break;
         }
     }
