@@ -119,11 +119,23 @@
         <service android:name=".update.UpdateService" />
 
         <activity android:name=".download.DownloadActivity">
-
         </activity>
+
         <activity android:name=".animation.AnimationActivity"></activity>
+
         <activity android:name=".animator.LayerDrawableActivity"></activity>
+
         <activity android:name=".sensor.CompassActivity">
+        </activity>
+
+        <!-- 定时记事本提醒 -->
+        <activity android:name=".alarm.AlarmNoteActivity"
+            android:label="@string/alarm_note_label">
+        </activity>
+        <activity
+            android:name=".alarm.AddEventActivity"
+            android:theme="@style/AppTheme"
+            android:label="@string/add_event">
         </activity>
     </application>
 
