@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">H5跳转到App</string>
 
     <!-- 数据库创建表 -->
     <string name="DB_TABLE_CREATE">CREATE TABLE if not exists Announcement

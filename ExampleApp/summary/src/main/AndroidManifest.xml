@@ -8,7 +8,7 @@
         android:description="@string/app_description"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@android:style/Theme.Light">
+        android:theme="@android:style/Theme.Light.NoTitleBar">
         <activity android:name=".activity.DisplayInCompleteActivity"/>
         <activity android:name=".activity.AnnouncementListActivity"/>
         <activity android:name=".textview.EditTextActivity"/>
@@ -18,23 +18,30 @@
             android:label="@string/title_activity_edit_view">
         </activity>
         <activity android:name=".scrollview.ScrollViewActivity">
-
         </activity>
         <activity android:name=".popupwindow.PopupWindowActivity">
         </activity>
-        <activity android:name=".H5ToNativeActivity"
-                  android:label="@string/app_name">
-            <!--android:launchMode="singleTask"-->
+        <activity
+            android:name=".H5ToNativeActivity"
+            android:label="@string/app_name">
+
+            <!-- android:launchMode="singleTask" -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+
+                <data
+                    android:host="local"
+                    android:scheme="app"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".listview.AutoScrollListViewActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
 
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data  android:scheme="app" android:host="local" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
     </application>
