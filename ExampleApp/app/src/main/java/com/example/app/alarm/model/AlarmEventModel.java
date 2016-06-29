@@ -6,20 +6,30 @@ package com.example.app.alarm.model;
  * @time 15:02
  */
 public class AlarmEventModel {
-    private String time;
+    private long id;
+    private long milliTime;
     private String event;
 
-    public AlarmEventModel(String time, String event) {
-        this.time = time;
+    public AlarmEventModel(long id, long milliTime, String event) {
+        this.id = id;
+        this.milliTime = milliTime;
         this.event = event;
     }
 
-    public String getTime() {
-        return time;
+    public long getId() {
+        return id;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public long getMilliTime() {
+        return milliTime;
+    }
+
+    public void setMilliTime(long milliTime) {
+        this.milliTime = milliTime;
     }
 
     public String getEvent() {

@@ -6,6 +6,7 @@
     <!-- Common -->
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
+    <string name="save">保存</string>
 
     <!-- 通讯录 -->
     <string name="name">姓名：</string>

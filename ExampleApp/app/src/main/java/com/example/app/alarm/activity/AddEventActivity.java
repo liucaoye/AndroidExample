@@ -13,10 +13,16 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.app.R;
+import com.example.app.utils.LogUtils;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class AddEventActivity extends AppCompatActivity implements View.OnClickListener {
 
-    public static final String EXTRA_KEY_TIME = "time";
+    public static final String EXTRA_KEY_MILLIS_TIME = "time";
     public static final String EXTRA_KEY_EVENT = "event";
 
     private EditText mTimeEditText;
@@ -68,10 +74,18 @@ public class AddEventActivity extends AppCompatActivity implements View.OnClickL
             Toast.makeText(this, "请输入事件", Toast.LENGTH_SHORT).show();
         }
 
-        Intent intent = new Intent();
-        intent.putExtra(EXTRA_KEY_TIME, time);
-        intent.putExtra(EXTRA_KEY_EVENT, event);
-        setResult(RESULT_OK);
-        finish();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+        try {
+            Date date = dateFormat.parse(time);
+            String parseTime = dateFormat.format(date);
+            LogUtils.e("input time: " + time + ", parse time: " + parseTime);
+            Intent intent = new Intent();
+            intent.putExtra(EXTRA_KEY_MILLIS_TIME, date.getTime());
+            intent.putExtra(EXTRA_KEY_EVENT, event);
+            setResult(RESULT_OK);
+            finish();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 }
