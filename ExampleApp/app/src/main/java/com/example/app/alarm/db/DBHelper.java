@@ -67,6 +67,10 @@ public class DBHelper extends SQLiteOpenHelper {
         return mDatabase.insert(TABLE_NAME, null, values);
     }
 
+    public void delete(AlarmEventModel model) {
+        mDatabase.delete(TABLE_NAME, "where _id=?", new String[] {model.getId() + ""});
+    }
+
     public List<AlarmEventModel> getAlarmList() {
         List<AlarmEventModel> list = new ArrayList<>();
 

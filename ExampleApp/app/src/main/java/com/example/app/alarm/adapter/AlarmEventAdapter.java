@@ -10,6 +10,8 @@ import android.widget.TextView;
 import com.example.app.R;
 import com.example.app.alarm.model.AlarmEventModel;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -53,7 +55,8 @@ public class AlarmEventAdapter extends BaseAdapter {
 
         }
         viewHolder = (ViewHolder) convertView.getTag();
-        viewHolder.timeTv.setText(mListData.get(position).getMilliTime() + "");
+
+        viewHolder.timeTv.setText(getTimeStr(mListData.get(position).getMilliTime()));
         viewHolder.eventTv.setText(mListData.get(position).getEvent());
 
         return convertView;
@@ -62,6 +65,13 @@ public class AlarmEventAdapter extends BaseAdapter {
     public void updateEvent(AlarmEventModel model) {
         mListData.add(model);
         notifyDataSetChanged();
+    }
+
+    private String getTimeStr(long millisTime) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(millisTime);
+        return dateFormat.format(calendar.getTime());
     }
 
     class ViewHolder {

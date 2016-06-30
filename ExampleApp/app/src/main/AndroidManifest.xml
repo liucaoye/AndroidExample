@@ -69,11 +69,6 @@
         <activity
             android:name=".socket.ClientActivity"
             android:theme="@style/AppTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <!-- 百度地图 -->
@@ -131,12 +126,23 @@
         <!-- 定时记事本提醒 -->
         <activity android:name=".alarm.activity.AlarmNoteActivity"
             android:label="@string/alarm_note_label">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".alarm.activity.AddEventActivity"
             android:theme="@style/AppTheme"
             android:label="@string/add_event">
         </activity>
+
+        <receiver android:name=".alarm.broadcase.AlarmBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
