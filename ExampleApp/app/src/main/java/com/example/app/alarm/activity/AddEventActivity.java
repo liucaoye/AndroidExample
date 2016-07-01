@@ -2,10 +2,7 @@ package com.example.app.alarm.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -15,7 +12,6 @@ import android.widget.Toast;
 import com.example.app.R;
 import com.example.app.utils.LogUtils;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -82,7 +78,7 @@ public class AddEventActivity extends AppCompatActivity implements View.OnClickL
             Intent intent = new Intent();
             intent.putExtra(EXTRA_KEY_MILLIS_TIME, date.getTime());
             intent.putExtra(EXTRA_KEY_EVENT, event);
-            setResult(RESULT_OK);
+            setResult(RESULT_OK, intent);
             finish();
         } catch (ParseException e) {
             e.printStackTrace();

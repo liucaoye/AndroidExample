@@ -48,6 +48,7 @@ public class AlarmEventAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder = null;
         if (convertView == null) {
+            viewHolder = new ViewHolder();
             convertView = LayoutInflater.from(mContext).inflate(R.layout.alarm_list_item, null);
             viewHolder.timeTv = (TextView) convertView.findViewById(R.id.tv_time);
             viewHolder.eventTv = (TextView) convertView.findViewById(R.id.tv_event);

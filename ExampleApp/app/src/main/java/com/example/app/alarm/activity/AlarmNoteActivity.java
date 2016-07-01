@@ -1,8 +1,6 @@
 package com.example.app.alarm.activity;
 
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -15,14 +13,12 @@ import android.widget.ListView;
 
 import com.example.app.R;
 import com.example.app.alarm.adapter.AlarmEventAdapter;
-import com.example.app.alarm.broadcase.AlarmBroadcastReceiver;
-import com.example.app.alarm.db.DBHelper;
-import com.example.app.alarm.db.DataBase;
+import com.example.app.alarm.db.AlarmNoteDB;
+import com.example.app.alarm.db.NoteDBHelper;
 import com.example.app.alarm.model.AlarmEventModel;
 import com.example.app.alarm.utils.AlarmHelper;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 public class AlarmNoteActivity extends AppCompatActivity {
@@ -45,6 +41,7 @@ public class AlarmNoteActivity extends AppCompatActivity {
 
     private void initData() {
         mListData = new ArrayList<>();
+        mListData.addAll(AlarmNoteDB.getInstance().getAlarmList());
     }
 
 
@@ -70,7 +67,7 @@ public class AlarmNoteActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
                             // 1、删除数据库中的数据 2、取消定时闹钟 3、更新listview
                             AlarmEventModel model = mListData.get(position);
-                            DBHelper.getInstance(AlarmNoteActivity.this).delete(model);
+                            AlarmNoteDB.getInstance().delete(model);
                             AlarmHelper.getInstance(AlarmNoteActivity.this).cancelAlarm(model);
                             mListData.remove(model);
                             mAdapter.notifyDataSetChanged();
@@ -115,7 +112,7 @@ public class AlarmNoteActivity extends AppCompatActivity {
 
     private void addEvent(long millisTime, String event) {
         // 1、存入数据库 2、设置定时闹钟 3、更新listview
-        long id = DBHelper.getInstance(this).insert(millisTime, event);
+        long id = AlarmNoteDB.getInstance().insert(millisTime, event);
         AlarmEventModel model = new AlarmEventModel(id, millisTime, event);
         mAdapter.updateEvent(model);
         AlarmHelper.getInstance(this).setAlarm(model);

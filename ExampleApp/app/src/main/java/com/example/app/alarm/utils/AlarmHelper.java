@@ -16,6 +16,8 @@ import com.example.app.alarm.model.AlarmEventModel;
  */
 public class AlarmHelper {
 
+    public static final String ACTION_ALRAM_NOTE = "cc";
+
     private static AlarmHelper alarmHelper;
 
     private Context mContext;
@@ -40,6 +42,7 @@ public class AlarmHelper {
         // TODO: alarm详情：http://blog.csdn.net/wangxingwu_314/article/details/8060312
         AlarmManager am = (AlarmManager) mContext.getSystemService(mContext.ALARM_SERVICE);
         Intent intent = new Intent(mContext, AlarmBroadcastReceiver.class);
+        intent.setAction(ACTION_ALRAM_NOTE);
         intent.putExtra(AddEventActivity.EXTRA_KEY_MILLIS_TIME, model.getMilliTime());
         intent.putExtra(AddEventActivity.EXTRA_KEY_EVENT, model.getEvent());
         PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, (int) model.getId(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -51,6 +54,7 @@ public class AlarmHelper {
     public void cancelAlarm(AlarmEventModel model) {
         AlarmManager am = (AlarmManager) mContext.getSystemService(mContext.ALARM_SERVICE);
         Intent intent = new Intent(mContext, AlarmBroadcastReceiver.class);
+        intent.setAction(ACTION_ALRAM_NOTE);
         intent.putExtra(AddEventActivity.EXTRA_KEY_MILLIS_TIME, model.getMilliTime());
         intent.putExtra(AddEventActivity.EXTRA_KEY_EVENT, model.getEvent());
         PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, (int) model.getId(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
