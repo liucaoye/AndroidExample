@@ -4,9 +4,10 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 
 import com.example.app.alarm.activity.AddEventActivity;
-import com.example.app.alarm.broadcase.AlarmBroadcastReceiver;
+import com.example.app.alarm.receiver.AlarmBroadcastReceiver;
 import com.example.app.alarm.model.AlarmEventModel;
 
 /**
@@ -47,7 +48,8 @@ public class AlarmHelper {
         intent.putExtra(AddEventActivity.EXTRA_KEY_EVENT, model.getEvent());
         PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, (int) model.getId(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        am.set(AlarmManager.RTC_WAKEUP, model.getMilliTime(), pendingIntent);
+//        am.set(AlarmManager.RTC_WAKEUP, model.getMilliTime(), pendingIntent);
+        // TODO: API 19及以上，定时不准
         am.setRepeating(AlarmManager.RTC_WAKEUP, model.getMilliTime(),  60 * 1000, pendingIntent);
     }
 

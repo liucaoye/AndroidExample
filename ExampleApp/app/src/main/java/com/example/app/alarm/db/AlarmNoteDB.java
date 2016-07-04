@@ -45,7 +45,7 @@ public class AlarmNoteDB {
     }
 
     public void delete(AlarmEventModel model) {
-        mDatabase.delete(NoteDBHelper.TABLE_NAME, "where _id=?", new String[] {model.getId() + ""});
+        mDatabase.delete(NoteDBHelper.TABLE_NAME, "_id=?", new String[] {model.getId() + ""});
     }
 
     public List<AlarmEventModel> getAlarmList() {

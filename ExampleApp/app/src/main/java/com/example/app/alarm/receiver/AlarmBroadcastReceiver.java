@@ -1,4 +1,4 @@
-package com.example.app.alarm.broadcase;
+package com.example.app.alarm.receiver;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -6,15 +6,12 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.SystemClock;
 import android.widget.Toast;
 
 import com.example.app.R;
 import com.example.app.alarm.activity.AddEventActivity;
 import com.example.app.alarm.activity.AlarmNoteActivity;
 import com.example.app.alarm.utils.AlarmHelper;
-
-import java.util.Calendar;
 
 /**
  * @author LIUYAN
@@ -32,6 +29,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
         if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
             // 开机自启动
             Toast.makeText(context, "开机自启动alarm", Toast.LENGTH_SHORT).show();
+
         } else if (intent.getAction().equals(AlarmHelper.ACTION_ALRAM_NOTE)) {
             // push通知
             Toast.makeText(context, "alarm push通知", Toast.LENGTH_SHORT).show();
@@ -46,7 +44,11 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
             builder.setSmallIcon(R.mipmap.ic_launcher);
             builder.setContentText(event);
             builder.setContentTitle("定时提醒笔记本");
-            builder.setWhen(SystemClock.currentThreadTimeMillis());
+            builder.setWhen(System.currentTimeMillis());
+
+//            Notification.FLAG_INSISTENT;//让声音、振动无限循环，直到用户响应
+//            Notification.FLAG_AUTO_CANCEL;//通知被点击后，自动消失
+//            Notification.FLAG_NO_CLEAR;//点击'Clear'时，不清楚该通知(QQ的通知无法清除，就是用的这个
 
             Intent toIntent = new Intent(context, AlarmNoteActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, toIntent, PendingIntent.FLAG_CANCEL_CURRENT);

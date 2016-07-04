@@ -79,7 +79,7 @@ public class AlarmNoteActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
                         }
-                    });
+                    }).create().show();
             return false;
         }
     };
