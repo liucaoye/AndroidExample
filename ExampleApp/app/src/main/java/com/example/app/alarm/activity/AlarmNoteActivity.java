@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.app.R;
 import com.example.app.alarm.adapter.AlarmEventAdapter;
@@ -42,6 +43,10 @@ public class AlarmNoteActivity extends AppCompatActivity {
     private void initData() {
         mListData = new ArrayList<>();
         mListData.addAll(AlarmNoteDB.getInstance().getAlarmList());
+        if (getIntent().hasExtra(AddEventActivity.EXTRA_KEY_EVENT)) {
+            String event = getIntent().getStringExtra(AddEventActivity.EXTRA_KEY_EVENT);
+            Toast.makeText(this, "event: " + event, Toast.LENGTH_SHORT).show();
+        }
     }
 
 
