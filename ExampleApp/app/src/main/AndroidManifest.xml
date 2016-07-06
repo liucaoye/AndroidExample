@@ -55,6 +55,9 @@
         <activity
             android:name=".lyrics.activity.LyricsActivity"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <service android:name=".lyrics.service.LrcService">
+        </service>
+        <!-- 同步歌词 -->
 
         <receiver android:name=".lockscreen.receiver.DeviceManagerBc">
 
@@ -149,6 +152,7 @@
                 <action android:name="com.example.app.action.ALARM_NOTE"/>
             </intent-filter>
         </receiver>
+        <!-- 定时记事本提醒 -->
     </application>
 
 </manifest>
