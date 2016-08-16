@@ -38,7 +38,17 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_margin="10dp"
-                android:text="@string/play_music"
+                android:text="@string/play"
+                android:layout_gravity="center_horizontal"
+                android:background="@null"/>
+
+            <Button
+                android:id="@+id/btn_pause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_margin="10dp"
+                android:text="@string/pause"
                 android:layout_gravity="center_horizontal"
                 android:background="@null"/>
 
@@ -48,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_margin="10dp"
-                android:text="@string/play_music"
+                android:text="@string/stop"
                 android:layout_gravity="center_horizontal"
                 android:background="@null"/>
         </LinearLayout>

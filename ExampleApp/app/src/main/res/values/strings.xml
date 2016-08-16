@@ -18,8 +18,10 @@
     <string name="please_select">请选择</string>
 
     <!-- 同步播放歌词 -->
-    <string name="play_music">播放</string>
-    
+    <string name="play">播放</string>
+    <string name="pause">暂停</string>
+    <string name="stop">停止</string>
+
     <!-- 定时记事本提醒 -->
     <string name="alarm_note_label">定时笔记本提醒</string>
     <string name="add_event">添加事件</string>
