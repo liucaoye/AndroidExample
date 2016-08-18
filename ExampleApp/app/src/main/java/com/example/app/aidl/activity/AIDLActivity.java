@@ -1,5 +1,6 @@
 package com.example.app.aidl.activity;
 
+import android.app.Activity;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -20,7 +21,7 @@ import com.example.app.utils.LogUtils;
  * Date: 15/11/29
  */
 
-public class AIDLActivity extends AppCompatActivity implements View.OnClickListener{
+public class AIDLActivity extends Activity implements View.OnClickListener{
 
     private Button mBindBtn;
     private Button mUnbindBtn;

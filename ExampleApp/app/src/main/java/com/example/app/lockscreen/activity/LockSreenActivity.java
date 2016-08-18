@@ -1,16 +1,16 @@
 package com.example.app.lockscreen.activity;
 
+import android.app.Activity;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.example.app.R;
 import com.example.app.lockscreen.receiver.DeviceManagerBc;
 
-public class LockSreenActivity extends AppCompatActivity implements View.OnClickListener{
+public class LockSreenActivity extends Activity implements View.OnClickListener{
 
     private DevicePolicyManager devicePolicyManager;
 

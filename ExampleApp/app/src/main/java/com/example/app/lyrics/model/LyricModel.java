@@ -5,7 +5,7 @@ package com.example.app.lyrics.model;
  * @date 2016/1/18 0018
  * @time 18:39
  */
-public class LyricObject {
+public class LyricModel {
 
     /**
      * 开始时间(ms)
@@ -13,12 +13,7 @@ public class LyricObject {
     private int startTime;
 
     /**
-     * 结束时间
-     * */
-    private int endTime;
-
-    /**
-     * 单句歌词用词
+     * 单句歌词用时
      * */
     private int duration;
 
@@ -27,13 +22,12 @@ public class LyricObject {
      * */
     private String lrc;
 
-    public LyricObject() {
+    public LyricModel() {
 
     }
 
-    public LyricObject(int startTime, int endTime, int duration, String lrc) {
+    public LyricModel(int startTime, int duration, String lrc) {
         this.startTime = startTime;
-        this.endTime = endTime;
         this.duration = duration;
         this.lrc = lrc;
     }
@@ -44,14 +38,6 @@ public class LyricObject {
 
     public void setStartTime(int startTime) {
         this.startTime = startTime;
-    }
-
-    public int getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(int endTime) {
-        this.endTime = endTime;
     }
 
     public int getDuration() {

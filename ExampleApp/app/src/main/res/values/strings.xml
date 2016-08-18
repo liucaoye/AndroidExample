@@ -25,4 +25,8 @@
     <!-- 定时记事本提醒 -->
     <string name="alarm_note_label">定时笔记本提醒</string>
     <string name="add_event">添加事件</string>
+    <string name="play_music_start">播放</string>
+    <string name="play_music_pause">暂停</string>
+    <string name="play_music_stop">停止</string>
+
 </resources>

@@ -1,6 +1,7 @@
 package com.example.app.contacts.activity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -13,8 +14,6 @@ import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.CommonDataKinds.StructuredName;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -51,7 +50,7 @@ import java.util.List;
  * app：使用系统的ContentProvider，
  * 打电话、发短信、多语言
  */
-public class ContactsActivity extends AppCompatActivity {
+public class ContactsActivity extends Activity {
 
     private Button addContact;
     private ListView listView;
@@ -190,7 +189,7 @@ public class ContactsActivity extends AppCompatActivity {
                 // 打电话
                 // 1. 添加权限
                 Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + contactItem.getPhone()));
-                if (ActivityCompat.checkSelfPermission(ContactsActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                if (ContactsActivity.this.checkSelfPermission(Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                     return;
                 }
                 startActivity(intent);
