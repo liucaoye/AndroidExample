@@ -145,6 +145,10 @@
 
         </activity>
         <activity android:name=".fipper.ViewFlipperActivity">
+        </activity>
+
+        <!-- 滑动的View -->
+        <activity android:name=".scroller.MultiScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

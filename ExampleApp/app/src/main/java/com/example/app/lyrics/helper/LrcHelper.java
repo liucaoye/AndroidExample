@@ -4,7 +4,8 @@ import android.content.Context;
 import android.util.Log;
 
 import com.example.app.ExampleApplication;
-import com.example.app.lyrics.model.LyricObject;
+import com.example.app.lyrics.model.LyricModel;
+import com.example.app.lyrics.model.LyricModel;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -53,9 +54,9 @@ public class LrcHelper {
     private void init() {
     }
 
-    public List<LyricObject> getLyric() {
+    public List<LyricModel> getLyric() {
 
-        List<LyricObject> list = new ArrayList<>();
+        List<LyricModel> list = new ArrayList<>();
         InputStream in = null;
         BufferedReader buf = null;
         try {
@@ -74,7 +75,7 @@ public class LrcHelper {
         return list;
     }
 
-    private List<LyricObject> readLineData(List<LyricObject> list, String lineData) {
+    private List<LyricModel> readLineData(List<LyricModel> list, String lineData) {
         if (lineData.contains(LYRIC_TITLE_MARK)) {
             mTitle = lineData.substring(lineData.indexOf(LYRIC_TITLE_MARK), lineData.indexOf(LYRIC_RIGHT_BRACKETS_MARK));
         } else if (lineData.contains(LYRIC_ALBUM_MARK)) {
@@ -86,7 +87,7 @@ public class LrcHelper {
             String[] array = lineData.split(LYRIC_RIGHT_BRACKETS_MARK);
 
             for (int i = 0; i < array.length; i++) {
-                LyricObject object = new LyricObject();
+                LyricModel object = new LyricModel();
                 int currentTime = getMillisecond(array[i]);
                 object.setStartTime(currentTime);
                 object.setLrc(array[array.length - 1]);

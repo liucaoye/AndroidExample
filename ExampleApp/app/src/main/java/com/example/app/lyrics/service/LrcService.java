@@ -8,10 +8,11 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 
 import com.example.app.lyrics.helper.LrcHelper;
-import com.example.app.lyrics.model.LyricObject;
+import com.example.app.lyrics.model.LyricModel;
 
 import java.util.List;
 import java.util.TreeMap;
+
 
 /**
  * @author LIUYAN
@@ -26,8 +27,8 @@ public class LrcService extends Service {
     private int duration;
     private int mIndex;
 
-    private TreeMap<Integer, LyricObject> mLyricObjectMap;
-    private List<LyricObject> mLyricList;
+    private TreeMap<Integer, LyricModel> mLyricObjectMap;
+    private List<LyricModel> mLyricList;
 
     @Nullable
     @Override
